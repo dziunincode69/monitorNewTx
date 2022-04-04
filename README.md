@@ -1,6 +1,6 @@
 # monitorNewTx
 
-monitor new tx "FROM" binance smart chain and send to telegram<br>
+monitor new tx "FROM", "TO" and send to telegram<br>
 
 # How to install
 git clone https://github.com/dziunincode69/monitorNewTx <br>
