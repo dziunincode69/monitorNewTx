@@ -1,6 +1,6 @@
 const w3 = require('web3')
 const TelegramBot = require('node-telegram-bot-api');
-const token = '5174872163:AAFqVbkbZgTSjbVVV5-6GR6QpNpkqZo_SPM'; // PUT YOUR TOKENS HERE
+const token = ''; // PUT YOUR TOKENS HERE
 const web3 = new w3(new w3.providers.WebsocketProvider('wss://ws-nd-531-556-757.p2pify.com/c29eedf7e2a454662e5beb28425a2b29')); //PUT YOUR WEBSOCKET HERE
 const bot = new TelegramBot(token, {polling: true});
 const fs = require('fs');
