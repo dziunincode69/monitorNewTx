@@ -8,7 +8,6 @@ const fs = require('fs');
 const subscription =  web3.eth.subscribe('pendingTransactions', async (err, res) => {
     try{
         var found = false
-        var stats = ""
         var data = []
         const info = await web3.eth.getTransaction(res)
             if(info == null){
@@ -24,29 +23,28 @@ const subscription =  web3.eth.subscribe('pendingTransactions', async (err, res)
             var chatid = element["chatid"]
             if(from == element["address"].toLowerCase() && chatid == element["chatid"]){
                 console.log("Found sir")
-                data.push(from,to,input,hash,label,chatid)
-                console.log(data)
-                stats = "from"
                 found = true
-            } else if(to == element["address"].toLowerCase() && chatid == element["chatid"]){
+                var postData = {From:from,To:to,Input:input,Hash:hash,Label:label,Chatid:chatid, Stats:"from"}
+                data.push(postData)   
+         } else if(to == element["address"].toLowerCase() && chatid == element["chatid"]){
                 console.log("Found sir")
-                data.push(from,to,input,hash,label,chatid)
-                console.log(data)
-                stats = "to"
+               var postData = {From:from,To:to,Input:input,Hash:hash,Label:label,Chatid:chatid, Stats:"to"}
+                data.push(postData)
                 found = true
             }
-            // console.log(info)
         });
         if(found == true){
-            if(stats == "to"){
-                await bot.sendMessage(data[5], `[!] INFO DANA MASUK🔔\nFrom: ${data[0]}\nTo: ${data[1]} ( ${data[4]} )\n\nTxHash: ${data[3]}`);
-            } else if(stats == "from"){
-                console.log(`[!] INFO New trx🔔\nFrom: ${data[0]} ( ${data[4]} ) \nTo: ${data[1]}\nInput:${data[2]}\n\nTxHash: ${data[3]}`)
-                await bot.sendMessage(data[5], `[!] INFO New trx🔔\nFrom: ${data[0]} ( ${data[4]} ) \nTo: ${data[1]}\nInput:${data[2]}\n\nTxHash: ${data[3]}`);
-            }
-            found = false
-            stats = ""
+        await Promise.all(data.map(async (en) => {
+        console.log(en["Chatid"])
+        console.log("Status: " +en["Stats"])
+        if(en["Stats"] == "to"){
+      await bot.sendMessage(en["Chatid"], `[!] INFO DANA MASUK🔔\nFrom:${en["From"]}\nTo: ${en["To"]} ( ${en["Label"]} )\n\nTxHash: ${en["Hash"]}`);
+           } else if(en["Stats"] == "from"){
+              await bot.sendMessage(en["Chatid"], `[!] INFO New trx🔔\nFrom:${en["From"]} ( ${en["Label"]} ) \nTo: ${en["To"]}\nInput:${en["Input"]}\n\nTxHash: ${en["Hash"]}`);
         }
+      }))
+        found = false;
+   }
     }catch(e){
     }
 })
