@@ -85,6 +85,52 @@ bot.onText(/\/monitor(.*?)\/|\/(.*?)/, async(msg, match) => {
     await bot.sendMessage(chatId, "[+] Saved 📑\nAddress: "+ addr+"\nLabel: "+label);
     }
 });
+bot.onText(/\/del(.*?)\/|\/(.*?)/, async (msg, match) => {
+    var data = {}
+    data.Info = []
+    if (match["input"].includes("del")) {
+        try {
+            const find = match["input"]
+            let pisah = find.split(" ")
+            const chatId = msg.chat.id;
+            let identify = pisah[1].toLowerCase()
+            let addr = identify // the captured "whatever"
+            addr = addr.replace(" ", "")
+            const getDatas = await getData()
+            getDatas.forEach(element => {
+                let hexx = element["address"].toLowerCase()
+                let namee = element["label"].toLowerCase()
+                let chatids = element["chatid"]
+                if(addr.includes(hexx)){
+                    console.log("found hexx")
+                    hexx = "null"
+                    namee = "null"
+                    chatids = "null"
+                } else if(addr.includes(namee)){
+                    console.log("found namee")
+                    hexx = "null"
+                    namee = "null"
+                    chatids = "null"
+                }
+                var obj = {
+                    "address":hexx,
+                    "label":namee,
+                    "chatid":chatId
+                }
+                data.Info.push(obj)
+                fs.writeFileSync("./address.json", JSON.stringify(data, null, 4));
+            });
+            bot.sendMessage(chatId, `Deleted ${addr}`, {
+                parse_mode: 'Markdown'
+            })
+            console.log("Deleted "+identify)
+        } catch (e) {
+            bot.sendMessage(msg.chat.id, `Err found ${e.message}`, {
+            })
+        }
+
+    }
+})
 async function getData(){
     var json = JSON.parse(fs.readFileSync('./address.json', 'utf8'));
     return json.Info
