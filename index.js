@@ -4,6 +4,7 @@ const token = ''; // PUT YOUR TOKENS HERE
 const web3 = new w3(new w3.providers.WebsocketProvider('ws://127.0.0.1:8546')); //PUT YOUR WEBSOCKET HERE
 const bot = new TelegramBot(token, {polling: true});
 const fs = require('fs');
+const URL = "https://bscscan.com"
 
 const subscription =  web3.eth.subscribe('pendingTransactions', async (err, res) => {
     try{
@@ -37,10 +38,17 @@ const subscription =  web3.eth.subscribe('pendingTransactions', async (err, res)
         await Promise.all(data.map(async (en) => {
         console.log(en["Chatid"])
         console.log("Status: " +en["Stats"])
+		let to = `[${en["To"]}](${URL}/address/${en["To"]})`
+		let from = `[${en["From"]}](${URL}/address/${en["From"]})`
+		let Hash = `[TxHash](${URL}/tx/${en["Hash"]})`
         if(en["Stats"] == "to"){
-      await bot.sendMessage(en["Chatid"], `[!] INFO DANA MASUK🔔\nFrom:${en["From"]}\nTo: ${en["To"]} ( ${en["Label"]} )\n\nTxHash: ${en["Hash"]}`);
+      await bot.sendMessage(en["Chatid"], `[!] INFO DANA MASUK🔔\nFrom:${from}\nTo: ${to} ( ${en["Label"]} )\n\nTxHash: ${Hash}`,{
+		parse_mode: "Markdown"
+	  });
            } else if(en["Stats"] == "from"){
-              await bot.sendMessage(en["Chatid"], `[!] INFO New trx🔔\nFrom:${en["From"]} ( ${en["Label"]} ) \nTo: ${en["To"]}\nInput:${en["Input"]}\n\nTxHash: ${en["Hash"]}`);
+              await bot.sendMessage(en["Chatid"], `[!] INFO New trx🔔\nFrom:${from} ( ${en["Label"]} ) \nTo: ${to}\nInput:${en["Input"]}\n\nTxHash: ${from}`,{
+                parse_mode: "Markdown"
+              });
         }
       }))
         found = false;
